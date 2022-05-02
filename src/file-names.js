@@ -15,27 +15,25 @@ const { NotImplementedError } = require('../extensions/index.js');
  * the output should be ["file", "file(1)", "image", "file(1)(1)", "file(2)"]
  *
  */
- function renameFiles(filePath) {
-  fs.readFile(resolve(__dirname, filePath), 'utf-8', (err, data) => {
-    if (err) {
-      console.error(err);
-    } else {
-      if (entries.length) {
-        entries.forEach(async ({ from, to }) => {
-          let result = await data.replaceAll(from, to);
-          fs.writeFile(
-            resolve(__dirname, filePath),
-            result,
-            'utf8',
-            function (err) {
-              if (err) return console.log(err);
-            }
-          );
-        });
+ function renameFiles(names) {
+  let arr = [...names],
+      done = 1
+  while (done) {
+      let tmpArr = []
+      done = 0
+      for (let i = 0; i < arr.length; i++) {
+          let count = 0
+          for (let i1 = 0; i1 < i; i1++) {
+              if (arr[i] == arr[i1]) count++
+          }
+          if (count) done = 1
+          tmpArr.push(arr[i] + (count ? `(${count})` : ''))
       }
-    }
-  });
+      arr = [...tmpArr]
+  }
+  return arr
 }
+
 module.exports = {
   renameFiles
 };
